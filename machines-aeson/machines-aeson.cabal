@@ -25,7 +25,6 @@ library
                        machines-attoparsec ==0.1.*,
                        attoparsec,
                        bytestring,
-                       exceptions,
                        mtl,
                        aeson
   hs-source-dirs:      src

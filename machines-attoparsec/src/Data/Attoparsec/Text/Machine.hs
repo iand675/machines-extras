@@ -2,7 +2,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleContexts #-}
 module Data.Attoparsec.Text.Machine where
-import Control.Monad.Catch
+import Control.Exception
 import Control.Monad.Trans
 import Data.Attoparsec.Text
 import Data.Text (Text)
@@ -16,11 +16,11 @@ data ParseError = ParseError [String] String
 instance Exception ParseError
 
 -- Throws a ParseError in the event that a parse fails
-parsed :: MonadThrow m => Parser a -> ProcessT m Text a
+parsed :: Parser a -> Process Text (Either ParseError a)
 parsed p = stack echo $ repeatedly (pop >>= go . parse p)
   where
-    go (Done i x) = push i >> yield x
+    go (Done i x) = push i >> yield (Right x)
     go (Partial f) = pop >>= go . f
-    go (Fail i ctxts msg) = push i >> lift (throwM $ ParseError ctxts msg)
+    go (Fail i ctxts msg) = push i >> yield (Left $ ParseError ctxts msg)
 {-# INLINEABLE parsed #-}
 
