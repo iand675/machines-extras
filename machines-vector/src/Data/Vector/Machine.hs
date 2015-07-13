@@ -24,4 +24,4 @@ buffered c = repeatedly $ do
           stop
         liftIO $ M.write v i x
         build v $! i + 1
-
+{-# INLINEABLE buffered #-}
